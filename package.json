@@ -1,0 +1,25 @@
+{
+  "name": "hackh-broadcast-node",
+  "version": "0.0.1",
+  "description": "Serverless kh broadcasting functions",
+  "main": "index.js",
+  "scripts": {
+    "start": "serverless offline -P 8081 -o 0.0.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/egislook/hackh-broadcast-node.git"
+  },
+  "keywords": [],
+  "author": "slash & clik",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/users/egislook/projects/5"
+  },
+  "homepage": "https://github.com/egislook/hackh-broadcast-node#readme",
+  "dependencies": {
+    "firebase-admin": "^8.9.0",
+    "serverless": "^1.48.2",
+    "serverless-offline": "^5.8.0"
+  }
+}

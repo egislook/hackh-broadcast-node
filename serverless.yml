@@ -1,0 +1,13 @@
+service: hackh-broadcast-node
+provider:
+  name: aws
+  runtime: nodejs10.x
+functions:
+  status:
+    handler: functions/Status/index.handler
+    events:
+      - http:
+          path: api/status
+          method: get
+plugins:
+  - serverless-offline
