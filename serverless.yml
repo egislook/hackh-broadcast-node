@@ -10,5 +10,11 @@ functions:
       - http:
           path: api/status
           method: get
+  Auth/otp:
+    handler: functions/Auth/otp.handler
+    events:
+      - http:
+          path: api/otp
+          method: post
 plugins:
   - serverless-offline
