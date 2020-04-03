@@ -2,6 +2,7 @@ service: hackh-broadcast-node
 provider:
   name: aws
   runtime: nodejs10.x
+  region: ap-southeast-1
 functions:
   status:
     handler: functions/Status/index.handler
