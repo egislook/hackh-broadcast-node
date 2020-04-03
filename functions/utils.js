@@ -39,6 +39,8 @@ function result(code, body, error){
 function extract(event){
   return {
     token: event.headers.authorization && event.headers.authorization.replace(/Bearer\s/igm, ''),
-    body: event.body && JSON.parse(event.body) || {}
+    body: event.body && JSON.parse(event.body) || {},
+    query: event.queryStringParameters || {},
+    path: event.pathParameters || {}
   }
 }

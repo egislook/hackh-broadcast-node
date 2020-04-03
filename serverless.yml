@@ -16,6 +16,10 @@ functions:
     events:
       - http:
           path: api/telegram
+          method: get
+          cors: true
+      - http:
+          path: api/telegram
           method: post
           cors: true
 plugins:
