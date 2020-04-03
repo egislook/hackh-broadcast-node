@@ -33,4 +33,3 @@ async function firebaseCheckUser(uid){
     return  
   }
 }
-serverless config credentials --provider aws --key AKIA3CQ6Y7ZSFA7GFB6Q --secret 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

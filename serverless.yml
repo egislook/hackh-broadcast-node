@@ -15,6 +15,11 @@ functions:
     events:
       - http:
           path: api/otp
+  telegram:
+    handler: functions/Telegram/index.handler
+    events:
+      - http:
+          path: api/telegram
           method: post
 plugins:
   - serverless-offline
