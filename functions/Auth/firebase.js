@@ -1,7 +1,8 @@
 var admin = require("firebase-admin");
-var serviceAccount = require("../utils/covid-test.json");
+var serviceAccount = require("../covid-test.json");
 
 module.exports.firebaseAuthRegister = firebaseAuthRegister;
+module.exports.firebaseVerify = firebaseVerify;
 
 !admin.apps.length &&
   admin.initializeApp({
@@ -9,27 +10,51 @@ module.exports.firebaseAuthRegister = firebaseAuthRegister;
     databaseURL: "https://covid-test-287ac.firebaseio.com"
   });;
 
-async function firebaseAuthRegister({ phone, verifyCode}) {
-  // let result = await firebaseCheckUser(phone);
-  // console.log(result);
-  // if (!result)
-  //   result = await admin
-  //     .auth()
-  //     .createUser({ uid: phone, emailVerified: true, password });
+async function firebaseAuthRegister({ phone, verifyCode, uid }) {
+  let result = await firebaseCheckUser(uid);
+  
+  if (!result)
+    result = await admin.auth().createUser({
+      uid,
+      password: verifyCode,
+      displayName: verifyCode,
+      email: `${phone}@example.com`,
+      emailVerified: true
+    });
+  else result = await admin
+         .auth()
+         .updateUser(uid, { password: verifyCode, displayName: verifyCode });
 
-  const fireAuthToken = await admin
-    .auth()
-    .createCustomToken(phone, { verifyCode });
+  if (result) return true;
 
-    console.log(fireAuthToken);
-
-  return true;
+  return false;
 }
 
-async function firebaseCheckUser(uid){
+async function firebaseVerify({ phone, verifyCode, uid }) {
+  const result = await firebaseCheckUser(uid);
+
+  if(!result)
+    throw { message: 'user does not exist', statusCode: 401}
+    
+  const { displayName } = result;
+
+  if (displayName !== verifyCode)
+    throw { message: "wrong verifaction code.", statusCode: 401 };
+
+  const token =  await admin.auth().createCustomToken(uid, { phone });
+
+  verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
+  admin
+    .auth()
+    .updateUser(uid, { password: verifyCode, displayName: verifyCode });
+
+  return token
+}
+
+async function firebaseCheckUser(uid) {
   try {
-    return await admin.auth().getUser(uid)
+    return await admin.auth().getUser(uid);
   } catch (error) {
-    return  
+    return;
   }
 }
