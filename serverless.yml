@@ -10,17 +10,26 @@ functions:
       - http:
           path: api/status
           method: get
+<<<<<<< HEAD
   authOtp:
     handler: functions/Auth/otp.handler
     events:
       - http:
           path: api/otp
           method: post
+=======
+          cors: true
+>>>>>>> 9bae0a4305a48f99c03ba43074cab1fe2a2678e9
   telegram:
     handler: functions/Telegram/index.handler
     events:
       - http:
           path: api/telegram
+          method: get
+          cors: true
+      - http:
+          path: api/telegram
           method: post
+          cors: true
 plugins:
   - serverless-offline
