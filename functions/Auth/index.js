@@ -6,8 +6,7 @@ const TWILIO_TOKEN = 'f0b3a3922d29a53717e5f0cd8cd5587f' || '11fa748e9e449d37f843
 const TWILIO_FROM = '+18506331535' || '+12029157522'
 
 module.exports.handler = async event => {
-  const { body } = extract(event)
-
+  const { body, query: { test = true } } = extract(event)
   try {
     let { phone = '', code = '' } = body
     if(!phone.includes('+855')) 
@@ -16,12 +15,13 @@ module.exports.handler = async event => {
     const uid = phone.replace(/^\+855|^0/, '855')
 
     if(Boolean(phone) && Boolean(!code)){
-      code = Math.floor(100000 + Math.random() * 900000).toString()
+      code = !!test ? '111111' : Math.floor(100000 + Math.random() * 900000).toString()
       const result = await firebaseAuthRegister({ phone, code, uid })
-      console.log(result)
-      return result ? sendCode(phone, code)
-        .then(() => success({ message: 'OTP delivered successfully' }))
-        .catch(error => (console.log(error) || fail(error))) : fail('bad request', {}, 400)
+      return result 
+        ? !!test ? success({ message: 'OTP delivered successfully' }) : sendCode(phone, code)
+          .then(() => success({ message: 'OTP delivered successfully' }))
+          .catch(error => (console.log(error) || fail(error))) 
+        : fail('bad request', {}, 400)
     }
 
     if (Boolean(phone) && Boolean(code))
