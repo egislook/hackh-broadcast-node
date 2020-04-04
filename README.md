@@ -8,17 +8,6 @@ tool to empower Cambodia to contain the spread of COVID-19 in the cities and pro
 1. installation command `npm install`
 2. starting command `npm start` it is using `8081` port by default
 
-## Telegram 
-
-Join the test channel https://t.me/hackh_broadcast
-
-```
-	POST: https://zwrqt3cve3.execute-api.ap-southeast-1.amazonaws.com/dev/api/telegram
-	body: {
-		"text": "*COVID-19: Reusable masks for all residents*  Wear a mask if you are out and in close contact with others  - Theres possibility of undetected cases in the community  - some evidence that infected persons with no symptoms can pass the virus"
-	}
-````
-
 ## Auth
 
 Request for verification code. OTP will be sent to your provided phone number.
@@ -59,3 +48,19 @@ response {
 	}
 }
 ``` 
+
+## Telegram 
+
+Join the test channel https://t.me/hackh_broadcast
+>You can use direct `text` or specific firebase `messageId` to send the message
+
+```
+	POST: https://zwrqt3cve3.execute-api.ap-southeast-1.amazonaws.com/dev/api/telegram
+	headers: {
+		Authorization: 'Bearer FIREBASE_ID_TOKEN'
+	}
+	body: {
+		"text": "*COVID-19: Reusable masks for all residents*  Wear a mask if you are out and in close contact with others  - Theres possibility of undetected cases in the community  - some evidence that infected persons with no symptoms can pass the virus",
+		"messageId": "randomMessageId1"
+	}
+````
