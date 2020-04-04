@@ -1,5 +1,7 @@
 const admin = require('firebase-admin')
-const certificate = require('../firebase.json')
+const certificate = require('./firebase.json')
+
+const FIREBASE_DB = 'https://hackh-broadcast.firebaseio.com'
 
 module.exports.firebaseAuthRegister = firebaseAuthRegister
 module.exports.firebaseVerify = firebaseVerify
@@ -8,7 +10,7 @@ module.exports.firebaseCheckAuth = firebaseCheckAuth
 !admin.apps.length &&
   admin.initializeApp({
     credential: admin.credential.cert(certificate),
-    databaseURL: 'https://covid-test-287ac.firebaseio.com'
+    databaseURL: FIREBASE_DB
   })
 
 async function firebaseAuthRegister({ phone, code, uid }) {
@@ -19,7 +21,8 @@ async function firebaseAuthRegister({ phone, code, uid }) {
       uid,
       password: code,
       displayName: code,
-      email: `${phone}@example.com`,
+      phoneNumber: phone,
+      // email: `${phone}@example.com`,
       emailVerified: true
     })
   else 
@@ -27,7 +30,7 @@ async function firebaseAuthRegister({ phone, code, uid }) {
      .auth()
      .updateUser(uid, { password: code, displayName: code })
 
-  if (result) return true
+  if(!!result) return true
 
   return false
 }
