@@ -19,40 +19,43 @@ Join the test channel https://t.me/hackh_broadcast
 	}
 ````
 
-## OTP
+## Auth
 
-Request for verification code
->Phone Number must a standard E. 164
+Request for verification code. OTP will be sent to your provided phone number.
+>Phone Number must be a string +85589******
+
 ```
-
-POST: https://zwrqt3cve3.execute-api.ap-southeast-1.amazonaws.com/dev/api/otp
+POST: https://zwrqt3cve3.execute-api.ap-southeast-1.amazonaws.com/dev/api/auth
 
 body: {
 	"phone": "+85589******"
 }
 
-respond:{
+response {
 	"statusCode": 200,
-	"headers": { ..... }
-	"body": "\"statusCode\": 200"
+	"body": {
+		message
+	}
 }
+```
 
-verification code sent to your phone number.
-```
 Request for customToken
->Phone Number must a standard E. 164
->Verification  code must be string.
+>Phone must be a string +85589******
+>Code must be 6 digit string ******
 ```
-POST: https://zwrqt3cve3.execute-api.ap-southeast-1.amazonaws.com/dev/api/otp
+POST: https://zwrqt3cve3.execute-api.ap-southeast-1.amazonaws.com/dev/api/auth
 
 body: {
 	"phone": "+85589******",
-	"verifyCode": "******"
+	"code": "******"
 }
 
-respond:{
+response {
 	"statusCode": 200,
-	"headers": { ..... }
-	"body": "customeToken"
+	"body": {
+		"data": {
+			customeToken
+		}
+	}
 }
 ``` 

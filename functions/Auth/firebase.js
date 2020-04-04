@@ -1,72 +1,71 @@
-var admin = require("firebase-admin");
-var serviceAccount = require("../covid-test.json");
+const admin = require('firebase-admin')
+const certificate = require('../firebase.json')
 
-module.exports.firebaseAuthRegister = firebaseAuthRegister;
-module.exports.firebaseVerify = firebaseVerify;
-module.exports.firebaseCheckAuth = firebaseCheckAuth;
+module.exports.firebaseAuthRegister = firebaseAuthRegister
+module.exports.firebaseVerify = firebaseVerify
+module.exports.firebaseCheckAuth = firebaseCheckAuth
 
 !admin.apps.length &&
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://covid-test-287ac.firebaseio.com"
-  });;
+    credential: admin.credential.cert(certificate),
+    databaseURL: 'https://covid-test-287ac.firebaseio.com'
+  })
 
-async function firebaseAuthRegister({ phone, verifyCode, uid }) {
-  let result = await firebaseCheckUser(uid);
+async function firebaseAuthRegister({ phone, code, uid }) {
+  let result = await firebaseCheckUser(uid)
   
   if (!result)
     result = await admin.auth().createUser({
       uid,
-      password: verifyCode,
-      displayName: verifyCode,
+      password: code,
+      displayName: code,
       email: `${phone}@example.com`,
       emailVerified: true
-    });
-  else result = await admin
-         .auth()
-         .updateUser(uid, { password: verifyCode, displayName: verifyCode });
+    })
+  else 
+    result = await admin
+     .auth()
+     .updateUser(uid, { password: code, displayName: code })
 
-  if (result) return true;
+  if (result) return true
 
-  return false;
+  return false
 }
 
-async function firebaseVerify({ phone, verifyCode, uid }) {
-  const result = await firebaseCheckUser(uid);
+async function firebaseVerify({ phone, code, uid }) {
+  const result = await firebaseCheckUser(uid)
 
   if(!result)
     throw { message: 'user does not exist', statusCode: 401}
     
-  const { displayName } = result;
+  const { displayName } = result
 
-  if (displayName !== verifyCode)
-    throw { message: "wrong verifaction code.", statusCode: 401 };
+  if (displayName !== code)
+    throw { message: 'wrong verifaction code.', statusCode: 401 }
 
-  const token =  await admin.auth().createCustomToken(uid, { phone });
+  const token =  await admin.auth().createCustomToken(uid, { phone })
 
-  verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
+  code = Math.floor(100000 + Math.random() * 900000).toString()
   admin
     .auth()
-    .updateUser(uid, { password: verifyCode, displayName: verifyCode });
+    .updateUser(uid, { password: code, displayName: code })
 
   return token
 }
 
 async function firebaseCheckUser(uid) {
   try {
-    return await admin.auth().getUser(uid);
+    return await admin.auth().getUser(uid)
   } catch (error) {
-    return;
+    return false
   }
 }
 
 async function firebaseCheckAuth(token){
   try {
     const decodedToken = await admin.auth().verifyIdToken(idToken)
-    if (decodedToken.uid) 
-      return true;
-    return false
+    return !!decodedToken.uid
   } catch (error) {
-    return false;
+    return false
   }
 }
