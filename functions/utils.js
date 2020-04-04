@@ -37,8 +37,9 @@ function result(code, body, error){
 }
 
 function extract(event){
+  const authorization = event.headers.authorization || event.headers.Authorization
   return {
-    token: event.headers.authorization && event.headers.authorization.replace(/Bearer\s/igm, ''),
+    token: !!authorization && authorization.replace(/Bearer\s/igm, ''),
     body: event.body && JSON.parse(event.body) || {},
     query: event.queryStringParameters || {},
     path: event.pathParameters || {}

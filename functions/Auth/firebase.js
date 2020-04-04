@@ -66,7 +66,7 @@ async function firebaseCheckUser(uid) {
 
 async function firebaseCheckAuth(token){
   try {
-    const decodedToken = await admin.auth().verifyIdToken(idToken)
+    const decodedToken = await admin.auth().verifyIdToken(token)
     return !!decodedToken.uid
   } catch (error) {
     return false
