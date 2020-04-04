@@ -18,3 +18,41 @@ Join the test channel https://t.me/hackh_broadcast
 		"text": "*COVID-19: Reusable masks for all residents*  Wear a mask if you are out and in close contact with others  - Theres possibility of undetected cases in the community  - some evidence that infected persons with no symptoms can pass the virus"
 	}
 ````
+
+## OTP
+
+Request for verification code
+>Phone Number must a standard E. 164
+```
+
+POST: https://zwrqt3cve3.execute-api.ap-southeast-1.amazonaws.com/dev/api/otp
+
+body: {
+	"phone": "+85589******"
+}
+
+respond:{
+	"statusCode": 200,
+	"headers": { ..... }
+	"body": "\"statusCode\": 200"
+}
+
+verification code sent to your phone number.
+```
+Request for customToken
+>Phone Number must a standard E. 164
+>Verification  code must be string.
+```
+POST: https://zwrqt3cve3.execute-api.ap-southeast-1.amazonaws.com/dev/api/otp
+
+body: {
+	"phone": "+85589******",
+	"verifyCode": "******"
+}
+
+respond:{
+	"statusCode": 200,
+	"headers": { ..... }
+	"body": "customeToken"
+}
+``` 
