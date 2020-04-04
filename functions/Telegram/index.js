@@ -8,7 +8,7 @@ const CHAT_ID = '@hackh_broadcast'
 module.exports.handler = async event => {
   const { token, body, query } = extract(event)
   const text = (query.text || body.text || 'Test Message').replace(/\s{2}/gm, '\n')
-  const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${text}&parse_mode=Markdown`
-  
+  const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURI(text)}&parse_mode=Markdown`
+
   return GET({ url }).then(success).catch(error => fail({ message: error }))
 }
