@@ -1,5 +1,8 @@
 const { fail, success, extract } = require("../utils");
 const { firebaseAuthRegister, firebaseVerify } = require("./firebase");
+const accountSid = "AC7ddf348bbbd87c827e8837bc97f6d4ab";
+const authToken = "d0ca09e86cb1545629133c23aadccbdf";
+const client = require('twilio')(accountSid, authToken);
 
 module.exports.handler = async event => {
   const { body } = extract(event);
@@ -16,9 +19,8 @@ module.exports.handler = async event => {
       const result = await firebaseAuthRegister({ phone, verifyCode, uid });
 
       if (result) {
-        console.log(verifyCode);
-        // sendSMS(phone, `verifcation code is: ${verifyCode}`);
-        return success({verifyCode});
+        await sendSMS({phone, verifyCode});
+        return success();
       }
       return fail("bad request", {}, 400);
     }
@@ -29,5 +31,21 @@ module.exports.handler = async event => {
       return fail(message, {}, statusCode);
 
     return fail(error);
+  }
+}
+
+async function sendSMS(params) {
+  const { verifyCode, phone } = params
+
+  try {
+     const result = await client.messages.create({
+       body: `verification code is: ${verifyCode}`,
+       from: "+1 772 675 6749",
+       to: phone,
+     });
+     console.log("result", result);
+  } catch (error) {
+    console.log("error", error);
+    throw error
   }
 }
