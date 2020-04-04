@@ -3,6 +3,7 @@ var serviceAccount = require("../covid-test.json");
 
 module.exports.firebaseAuthRegister = firebaseAuthRegister;
 module.exports.firebaseVerify = firebaseVerify;
+module.exports.firebaseCheckAuth = firebaseCheckAuth;
 
 !admin.apps.length &&
   admin.initializeApp({
@@ -56,5 +57,16 @@ async function firebaseCheckUser(uid) {
     return await admin.auth().getUser(uid);
   } catch (error) {
     return;
+  }
+}
+
+async function firebaseCheckAuth(token){
+  try {
+    const decodedToken = await admin.auth().verifyIdToken(idToken)
+    if (decodedToken.uid) 
+      return true;
+    return false
+  } catch (error) {
+    return false;
   }
 }

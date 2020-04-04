@@ -1,5 +1,6 @@
 const { success, fail, extract } = require('../utils')
 const { fetch, GET } = require('fetchier')
+const {firebaseCheckAuth } = require('../Auth/firebase')
 
 const BOT_TOKEN = '1042446704:AAHmZ2vprLeF_o6p3vGdNjUP2ygigRLxHg0'
 const CHAT_ID = '@hackh_broadcast'
