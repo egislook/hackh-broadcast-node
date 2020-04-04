@@ -64,3 +64,25 @@ Join the test channel https://t.me/hackh_broadcast
 		"messageId": "randomMessageId1"
 	}
 ````
+
+# Client authorization
+
+```javascript
+	
+	firebase.initializeApp({
+	  apiKey: "AIzaSyDVT7hjCcB-mi3a-q4A7XZvbkGgc8z4Q5w",      // Auth / General Use
+	  databaseURL: "https://hackh-broadcast.firebaseio.com",  // Realtime Database
+	  storageBucket: "hackh-broadcast.appspot.com"            // Storage
+	})
+
+	const auth = firebase.auth()
+	await auth.signInWithCustomToken(CUSTOM_TOKEN)
+	const token = await auth.currentUser.getIdTokenResult()
+
+  firebase.database().ref('telegram').on('value', snapshot => {
+    const messages = []
+    snapshot.forEach(child => messages.push(child.val()))
+    // it should trigger every time there are some changes happening
+    console.log(messages)
+  })
+```
