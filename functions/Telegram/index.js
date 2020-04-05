@@ -17,8 +17,9 @@ module.exports.handler = async event => {
   let text = (query.text || body.text || 'Test Message').replace(/\s{2}/gm, '\n')
   
   if(!!messageId){
-    text = await firebaseDatabaseMessage(['telegram', messageId])
-    if(!text) return fail({ message: 'Incorrect message id' })
+    const result = await firebaseDatabaseMessage(['telegram', messageId]) || {}
+    if(!result) return fail({ message: 'Incorrect message id' })
+    text = result.message
   }
 
   const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURI(text)}&parse_mode=Markdown`
