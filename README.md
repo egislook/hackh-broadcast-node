@@ -68,6 +68,8 @@ Join the test channel https://t.me/hackh_broadcast
 ## Messenger 
 
 Join the test chat by saying hi https://m.me/113306183658091
+>You have to be a in a tester list in existing facebook app otherwise subscription not gonna work.
+>You should receive message `Thank you for subscribing our Hackh notifications` if you are not in the subscribers list
 >You can use direct `text` or specific firebase `messageId` to send the message
 
 ```
