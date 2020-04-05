@@ -7,7 +7,8 @@ const TWILIO_FROM = '+19048539184'
 
 module.exports.handler = async event => {
   const { body, query } = extract(event)
-  const test = query.test !== 'false'
+  // const test = query.test !== 'false'
+  const test = false
   try {
     let { phone = '', code = '' } = body
     if(!phone.includes('+855')) 
