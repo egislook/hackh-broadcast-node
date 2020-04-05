@@ -27,17 +27,19 @@ module.exports.handler = async event => {
     text = result.message
   }
 
+  let errorIds = []
+
   try{
     for(let id in result){
       await POST({
         url: `https://graph.facebook.com/v6.0/me/messages?access_token=${ACCESS_TOKEN}`,
         body: { messaging_type: 'RESPONSE', recipient: { id }, message: { text } }
-      })
+      }).catch(err => errorIds.concat([id]))
 
       await new Promise(res => setTimeout(res, 500))
     }
-    return success(result)
+    return success(result, { unSuccessUsers: errorIds });
   } catch(error){
-    return fail({ error })
+    return fail({ error });
   }
 }
