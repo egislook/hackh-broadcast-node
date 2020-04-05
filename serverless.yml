@@ -39,7 +39,7 @@ functions:
           path: api/messenger
           method: post
           cors: true
-  messenger/webhook:
+  messengerWebhook:
     handler: functions/Messenger/webhook.handler
     events:
       - http:
