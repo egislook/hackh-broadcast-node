@@ -39,5 +39,16 @@ functions:
           path: api/messenger
           method: post
           cors: true
+  messenger/webhook:
+    handler: functions/Messenger/webhook.handler
+    events:
+      - http:
+          path: api/messenger/webhook
+          method: get
+          cors: true
+      - http:
+          path: api/messenger/webhook
+          method: post
+          cors: true
 plugins:
   - serverless-offline

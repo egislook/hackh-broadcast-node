@@ -1,5 +1,5 @@
 const { fail, success, extract } = require('../utils')
-const { firebaseAuthRegister, firebaseVerify } = require('./firebase')
+const { firebaseAuthRegister, firebaseVerify } = require('../firebase')
 
 const TWILIO_SID = 'AC71f5f850e396811ba8a6d27f564e2023'
 const TWILIO_TOKEN = 'd48139b88445ec97b99b84fdfa4ddcfb'
