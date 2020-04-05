@@ -42,6 +42,7 @@ function extract(event){
     token: !!authorization && authorization.replace(/Bearer\s/igm, ''),
     body: event.body && JSON.parse(event.body) || {},
     query: event.queryStringParameters || {},
-    path: event.pathParameters || {}
+    path: event.pathParameters || {},
+    method: event.requestContext.httpMethod
   }
 }
