@@ -30,6 +30,8 @@ module.exports.handler = async event => {
 
   return POST({
     url: `https://graph.facebook.com/v6.0/me/messages?access_token=${ACCESS_TOKEN}`,
-    body: { messaging_type: 'RESPONSE', recipient: { id }, message: { text: 'Thank you for subscribing our Hackh notifications' } }
+    body: {
+      messaging_type: 'RESPONSE', recipient: { id }, message: {
+        text: 'Thank you for subscribing the the official Covid-19 channel for Cambodia! We will send you all the official information regarding the Covid- 19 virus so you can stay up to date!' } }
   }).then(success).catch(fail)
 }
