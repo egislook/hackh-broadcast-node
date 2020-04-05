@@ -28,5 +28,16 @@ functions:
           path: api/telegram
           method: post
           cors: true
+  messenger:
+    handler: functions/Messenger/index.handler
+    events:
+      - http:
+          path: api/messenger
+          method: get
+          cors: true
+      - http:
+          path: api/messenger
+          method: post
+          cors: true
 plugins:
   - serverless-offline
