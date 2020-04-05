@@ -77,6 +77,6 @@ async function firebaseCheckAuth(token){
 async function firebaseDatabaseMessage(refs = []){
   return new Promise((resolve, reject) => admin.database().ref(refs.join('/')).once('value', snap => {
     const value = snap && snap.val && snap.val()
-    return resolve(value && value.body)
+    return resolve(value)
   }))
 }
