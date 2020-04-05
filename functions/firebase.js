@@ -6,7 +6,8 @@ const FIREBASE_DB = 'https://hackh-broadcast.firebaseio.com'
 module.exports.firebaseAuthRegister = firebaseAuthRegister
 module.exports.firebaseVerify = firebaseVerify
 module.exports.firebaseCheckAuth = firebaseCheckAuth
-module.exports.firebaseDatabaseMessage = firebaseDatabaseMessage
+module.exports.firebaseDatabaseGet = firebaseDatabaseGet
+module.exports.firebaseDatabaseUpdate = firebaseDatabaseUpdate
 
 !admin.apps.length &&
   admin.initializeApp({
@@ -74,9 +75,16 @@ async function firebaseCheckAuth(token){
   }
 }
 
-async function firebaseDatabaseMessage(refs = []){
+async function firebaseDatabaseGet(refs = []){
   return new Promise((resolve, reject) => admin.database().ref(refs.join('/')).once('value', snap => {
     const value = snap && snap.val && snap.val()
     return resolve(value)
+  }))
+}
+
+async function firebaseDatabaseUpdate(refs = [], data){
+  return new Promise((resolve, reject) => admin.database().ref(refs.join('/')).update(data, err => {
+    console.log(err)
+    return resolve(err ? null : data)
   }))
 }

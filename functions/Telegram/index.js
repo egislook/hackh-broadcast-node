@@ -1,6 +1,6 @@
 const { success, fail, extract } = require('../utils')
 const { fetch, GET } = require('fetchier')
-const { firebaseCheckAuth, firebaseDatabaseMessage } = require('../Auth/firebase')
+const { firebaseCheckAuth, firebaseDatabaseGet } = require('../firebase')
 
 const BOT_TOKEN = '1042446704:AAHmZ2vprLeF_o6p3vGdNjUP2ygigRLxHg0'
 const CHAT_ID = '@hackh_broadcast'
@@ -17,7 +17,7 @@ module.exports.handler = async event => {
   let text = (query.text || body.text || 'Test Message').replace(/\s{2}/gm, '\n')
   
   if(!!messageId){
-    const result = await firebaseDatabaseMessage(['telegram', messageId]) || {}
+    const result = await firebaseDatabaseGet(['telegram', messageId]) || {}
     if(!result) return fail({ message: 'Incorrect message id' })
     text = result.message
   }
