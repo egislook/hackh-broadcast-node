@@ -2,7 +2,7 @@ const { fail, success, extract } = require('../utils')
 const { firebaseAuthRegister, firebaseVerify } = require('../firebase')
 
 const TWILIO_SID = 'AC71f5f850e396811ba8a6d27f564e2023'
-const TWILIO_TOKEN = 'd48139b88445ec97b99b84fdfa4ddcfb'
+const TWILIO_TOKEN = '18131bc393427260c371b5e612031188'
 const TWILIO_FROM = '+19048539184'
 
 module.exports.handler = async event => {
