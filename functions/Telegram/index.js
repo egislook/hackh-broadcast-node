@@ -14,15 +14,32 @@ module.exports.handler = async event => {
     if(!allow) return fail({ message: 'unauthorized access'})
   }
 
-  let text = (query.text || body.text || 'Test Message').replace(/\s{2}/gm, '\n')
-  
+
+  let method = (query.method || body.method || 'sendMessage').replace(/\s{2}/gm, '\n')
+
   if(!!messageId){
-    const result = await firebaseDatabaseGet(['telegram', messageId]) || {}
+    result = await firebaseDatabaseGet(['telegram', messageId]) || {}
     if(!result) return fail({ message: 'Incorrect message id' })
-    text = result.message
   }
 
-  const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURI(text)}&parse_mode=Markdown`
+  try {
+    let url = `https://api.telegram.org/bot${BOT_TOKEN}/${method}?chat_id=${CHAT_ID}`
 
-  return GET({ url }).then(success).catch(error => fail({ message: error }))
+    switch (method) {
+      case 'sendPoll':
+        let question = (query.question || body.question || 'Is it text meesage?').replace(/\s{2}/gm, '\n') || result.question
+        let options = (query.options || body.options || ["Yeah", "Absolutely"]) || result.options
+
+        url += `&question=${question}&options=${JSON.stringify(options)}`
+        break;
+      default:
+        let text = (query.text || body.text || 'Test Message').replace(/\s{2}/gm, '\n') || result.text 
+        url += `&text=${encodeURI(text)}&parse_mode=Markdown`
+        break;
+    }
+
+    return GET({ url }).then(success).catch(error => fail({ message: error }))
+  } catch (error) {
+    console.log(error)
+  }
 }
