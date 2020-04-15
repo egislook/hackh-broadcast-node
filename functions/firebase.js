@@ -8,6 +8,7 @@ module.exports.firebaseVerify = firebaseVerify
 module.exports.firebaseCheckAuth = firebaseCheckAuth
 module.exports.firebaseDatabaseGet = firebaseDatabaseGet
 module.exports.firebaseDatabaseUpdate = firebaseDatabaseUpdate
+module.exports.firebaseDatabaseSet = firebaseDatabaseSet
 
 !admin.apps.length &&
   admin.initializeApp({
@@ -101,6 +102,13 @@ async function firebaseDatabaseGet(refs = []){
 
 async function firebaseDatabaseUpdate(refs = [], data){
   return new Promise((resolve, reject) => admin.database().ref(refs.join('/')).update(data, err => {
+    console.log(err)
+    return resolve(err ? null : data)
+  }))
+}
+
+async function firebaseDatabaseSet(refs = [], data) {
+  return new Promise((resolve, reject) => admin.database().ref(refs.join('/')).set(data, err => {
     console.log(err)
     return resolve(err ? null : data)
   }))

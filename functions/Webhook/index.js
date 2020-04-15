@@ -1,11 +1,14 @@
 const { success, fail, extract } = require('../utils')
 const { fetch, GET } = require('fetchier')
-const { firebaseCheckAuth, firebaseDatabaseGet } = require('../firebase')
+const { firebaseDatabaseSet } = require('../firebase')
 
 module.exports.handler = async event => {
   try {
     const { body } = extract(event)
-    console.log(body)
+    const { poll } = body
+
+    if (poll)
+      await firebaseDatabaseSet(['statistics', poll.id], poll) 
     return success(body)
   } catch (error) {
     console.log(error)

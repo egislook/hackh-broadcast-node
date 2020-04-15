@@ -35,6 +35,7 @@ module.exports.handler = async event => {
       default:
         let text = (query.text || body.text || 'Test Message').replace(/\s{2}/gm, '\n') || result.text 
         url += `&text=${encodeURI(text)}&parse_mode=Markdown`
+
         break;
     }
 
