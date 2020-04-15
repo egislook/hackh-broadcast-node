@@ -101,6 +101,7 @@ async function firebaseDatabaseGet(refs = []){
 }
 
 async function firebaseDatabaseUpdate(refs = [], data){
+
   return new Promise((resolve, reject) => admin.database().ref(refs.join('/')).update(data, err => {
     console.log(err)
     return resolve(err ? null : data)

@@ -7,7 +7,7 @@ const CHAT_ID = '@hackh_broadcast'
 
 module.exports.handler = async event => {
   const { token, body, query } = extract(event)
-  const messageId = query.messageId || body.messageId
+  let messageId = query.messageId || body.messageId
 
   if(token){
     const allow = await firebaseCheckAuth(token)
@@ -39,15 +39,17 @@ module.exports.handler = async event => {
         break;
     }
 
-    // const { result: { poll }} =  GET({ url }).then(success).catch(error => fail({ message: error }))
-    result =  GET({ url }).then(success).catch(error => fail({ message: error }))
-    console.log({ result})
-    // if (poll && messageId){
-    //   await firebaseDatabaseUpdate(['telegram', messageId], { statisticId: poll.id})
-    // }
+    const newResult =  await GET({ url }).then(res => res).catch(error => {throw error})
 
-    return result
+    const { result: { poll } } = newResult
+
+    if (poll && messageId){
+      await firebaseDatabaseUpdate(['telegram', messageId], { statisticId: poll.id})
+    }
+
+    return success(newResult)
   } catch (error) {
     console.log(error)
+    fail({ message: error })
   }
 }
