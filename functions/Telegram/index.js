@@ -39,11 +39,12 @@ module.exports.handler = async event => {
         break;
     }
 
-    const { result: { poll }} =  GET({ url }).then(success).catch(error => fail({ message: error }))
-
-    if (poll && messageId){
-      await firebaseDatabaseUpdate(['telegram', messageId], { statisticId: poll.id})
-    }
+    // const { result: { poll }} =  GET({ url }).then(success).catch(error => fail({ message: error }))
+    result =  GET({ url }).then(success).catch(error => fail({ message: error }))
+    console.log({ result})
+    // if (poll && messageId){
+    //   await firebaseDatabaseUpdate(['telegram', messageId], { statisticId: poll.id})
+    // }
 
     return result
   } catch (error) {
