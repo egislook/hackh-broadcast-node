@@ -25,12 +25,20 @@ async function firebaseAuthRegister({ phone, code, uid }) {
       displayName: code,
       phoneNumber: phone,
       // email: `${phone}@example.com`,
+      photoURL: 'http://0.com',
       emailVerified: true
     })
-  else 
+  else {
+    // const { photoURL } = result
+
+    // let invalidCount = photoURL && Number(photoURL.replace(/http:\/\/|\.com/ig, '')) || 0
+
+    // if (invalidCount > 5)
+    //   throw { message: 'attemp exceeded limitation', statusCode: 401 }
     result = await admin
-     .auth()
-     .updateUser(uid, { password: code, displayName: code })
+      .auth()
+      .updateUser(uid, { password: code, displayName: code, photoURL: 'http://0.com' })
+  }
 
   if(!!result) return true
 
@@ -43,10 +51,19 @@ async function firebaseVerify({ phone, code, uid }) {
   if(!result)
     throw { message: 'user does not exist', statusCode: 401}
     
-  const { displayName } = result
+  const { displayName, photoURL } = result
 
-  if (displayName !== code)
+  let invalidCount = photoURL && Number(photoURL.replace(/http:\/\/|\.com/ig, '')) || 0
+
+  if (invalidCount > 5) 
+    throw { message: 'attemp exceeded limitation', statusCode: 401 }
+
+  if (displayName !== code){
+    admin
+      .auth()
+      .updateUser(uid, { photoURL: `http://${invalidCount + 1}.com` })
     throw { message: 'wrong verifaction code.', statusCode: 401 }
+  }
 
   const token =  await admin.auth().createCustomToken(uid, { phone })
 

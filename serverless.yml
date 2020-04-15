@@ -29,11 +29,11 @@ functions:
           method: post
           cors: true
   webhook:
-    handler: functions/Telegram/index.handler
+    handler: functions/Webhook/index.handler
     events:
       - http:
           path: api/webhook
-          method: get
+          method: post
           cors: true
   messenger:
     handler: functions/Messenger/index.handler

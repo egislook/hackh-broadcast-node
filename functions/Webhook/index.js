@@ -4,9 +4,9 @@ const { firebaseCheckAuth, firebaseDatabaseGet } = require('../firebase')
 
 module.exports.handler = async event => {
   try {
-    console.log(event)
-    // const { token, body, query } = extract(event)
-    return success()
+    const { body } = extract(event)
+    console.log(body)
+    return success(body)
   } catch (error) {
     console.log(error)
     return fail()
