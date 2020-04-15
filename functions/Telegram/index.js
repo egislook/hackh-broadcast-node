@@ -1,6 +1,6 @@
 const { success, fail, extract } = require('../utils')
 const { fetch, GET } = require('fetchier')
-const { firebaseCheckAuth, firebaseDatabaseGet } = require('../firebase')
+const { firebaseCheckAuth, firebaseDatabaseGet, firebaseDatabaseUpdate } = require('../firebase')
 
 const BOT_TOKEN = '1042446704:AAHmZ2vprLeF_o6p3vGdNjUP2ygigRLxHg0'
 const CHAT_ID = '@hackh_broadcast'
@@ -39,7 +39,13 @@ module.exports.handler = async event => {
         break;
     }
 
-    return GET({ url }).then(success).catch(error => fail({ message: error }))
+    const { result: { poll }} =  GET({ url }).then(success).catch(error => fail({ message: error }))
+
+    if (poll && messageId){
+      await firebaseDatabaseUpdate(['telegram', messageId], { statisticId: poll.id})
+    }
+
+    return result
   } catch (error) {
     console.log(error)
   }
