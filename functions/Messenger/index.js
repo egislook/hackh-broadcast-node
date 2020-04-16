@@ -7,39 +7,63 @@ let ACCESS_TOKEN = 'EAACHRa3jp5ABAI7Lgnx3tjymwnfcBLJuk4fz9YUGxB3QMXZAqazhLQpo1aw
 //'EAAqJMPEY2dEBADF7Aj9kvhCZCda6Q7D5zEzVAVCy5qpAtZCkVpukA6t5BB1dtQPCG0L5UNlUn2ubAKjsq9y1JZCh6VQBD6cYX8pePkBIelFwvRZC1cH3qpfWrvNTB8w07I0mKQIaVPKzpj29lxGqo8PqJTOxnZBOeBLE2j2fXjQZDZD';
 
 module.exports.handler = async event => {
-  const { token, query, body, method } = extract(event)
+  let { token, query, body: eventBody } = extract(event)
+  let messageId = query.messageId || eventBody.messageId
 
   if(token){
     const allow = await firebaseCheckAuth(token)
     if(!allow) return fail({ message: 'Unauthorized access'})
   }
 
-  const result = await firebaseDatabaseGet(['subscribers'])
-  if(!result) return fail({ message: 'No subscribers found' })
+  let subscribers = await firebaseDatabaseGet(['subscribers'])
+  if (!subscribers) return fail({ message: 'No subscribers found' })
 
-  const messageId = query.messageId || body.messageId
-
-  let text = (query.text || body.text || 'Test Message').replace(/\s{2}/gm, '\n')
-  
+  let result
   if(!!messageId){
-    const result = await firebaseDatabaseGet(['messenger', messageId]) || {}
+    result = await firebaseDatabaseGet(['messenger', messageId]) || {}
     if(!result) return fail({ message: 'Incorrect message id' })
-    text = result.message
   }
 
+  let method = (result && result.method) || (query.method || eventBody.method || 'sendMessage').replace(/\s{2}/gm, '\n')
+
   const results = { successful: [], unsuccessful: [] }
+  const url = `https://graph.facebook.com/v6.0/me/messages?access_token=${ACCESS_TOKEN}`
+
+  let body = { messaging_type: 'RESPONSE'}
+
+  switch (method) {
+    case 'sendPoll':
+      let question = (result && result.question) || (query.question || eventBody.question || 'Is it text meesage?').replace(/\s{2}/gm, '\n')
+      let options = (result && result.options) || (query.options || eventBody.options || ["Yeah", "Absolutely"])
+      body['message'] = {
+        text: question,
+        quick_replies: options.map(option => ({
+          "content_type": "text",
+          "title": option,
+          "payload": "<POSTBACK_PAYLOAD>"
+        }))
+      }
+
+      break;
+    default:
+      let text = (result && result.text) || (query.text || eventBody.text || 'Test Message').replace(/\s{2}/gm, '\n')
+      body['message'] = { text }
+      break;
+  }
 
   try{
-    for(let id in result){
+    for (let id in subscribers){
+      body["recipient"] = {id}
       await POST({
-        url: `https://graph.facebook.com/v6.0/me/messages?access_token=${ACCESS_TOKEN}`,
-        body: { messaging_type: 'RESPONSE', recipient: { id }, message: { text } }
+        url,
+        body
       })
       .catch(err => {
         console.log(err)
         results.unsuccessful = results.unsuccessful.concat([id])
       })
-      .then(() => {
+      .then((res) => {
+
         results.successful = results.successful.concat([id])
       })
 
