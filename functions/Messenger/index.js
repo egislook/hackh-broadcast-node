@@ -22,7 +22,7 @@ module.exports.handler = async event => {
   let text = (query.text || body.text || 'Test Message').replace(/\s{2}/gm, '\n')
   
   if(!!messageId){
-    const result = await firebaseDatabaseGet(['telegram', messageId]) || {}
+    const result = await firebaseDatabaseGet(['messenger', messageId]) || {}
     if(!result) return fail({ message: 'Incorrect message id' })
     text = result.message
   }
