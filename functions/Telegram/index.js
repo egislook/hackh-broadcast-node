@@ -14,28 +14,28 @@ module.exports.handler = async event => {
     if(!allow) return fail({ message: 'unauthorized access'})
   }
 
-
-  let method = (query.method || body.method || 'sendMessage').replace(/\s{2}/gm, '\n')
+  let result
 
   if(!!messageId){
     result = await firebaseDatabaseGet(['telegram', messageId]) || {}
     if(!result) return fail({ message: 'Incorrect message id' })
   }
 
+  let method = (result && result.method) || (query.method || body.method || 'sendMessage').replace(/\s{2}/gm, '\n')
+
   try {
     let url = `https://api.telegram.org/bot${BOT_TOKEN}/${method}?chat_id=${CHAT_ID}`
 
     switch (method) {
       case 'sendPoll':
-        let question = (query.question || body.question || 'Is it text meesage?').replace(/\s{2}/gm, '\n') || result.question
-        let options = (query.options || body.options || ["Yeah", "Absolutely"]) || result.options
+        let question = (result && result.question) || (query.question || body.question || 'Is it text meesage?').replace(/\s{2}/gm, '\n')
+        let options = (result && result.options) || (query.options || body.options || ["Yeah", "Absolutely"])
 
         url += `&question=${question}&options=${JSON.stringify(options)}`
         break;
       default:
-        let text = (query.text || body.text || 'Test Message').replace(/\s{2}/gm, '\n') || result.text 
+        let text = (result && result.text ) || (query.text || body.text || 'Test Message').replace(/\s{2}/gm, '\n')
         url += `&text=${encodeURI(text)}&parse_mode=Markdown`
-
         break;
     }
 
