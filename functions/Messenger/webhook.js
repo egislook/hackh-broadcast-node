@@ -20,18 +20,58 @@ module.exports.handler = async event => {
 
   // POST request
   const { entry } = body
-  const { sender: { id } } = entry[0].messaging[0] || {}
 
+  const { sender: { id }, message = {} } = entry[0].messaging[0] || {}
+
+  let { quick_reply, text } = message || {}
+
+  if (quick_reply){
+    let { messageId, method } = JSON.parse(quick_reply.payload)
+    await updatePollStatistic({ messageId, text, statisticId: entry[0].id})
+    return success()
+  }
+
+  return await subscribeUser(id)
+}
+
+const updatePollStatistic = async ({ messageId, text, statisticId}) => {
+  let result = await firebaseDatabaseGet(['messenger', messageId]) || {}
+  let statistics = {}
+
+  if (!result.statistics)
+    statistics = {
+      id: statisticId,
+      question: result.question,
+      options: result.options.map(option => ({
+        text: option,
+        voter_count: text === option ? 1 : 0
+      })),
+      total_voter_count: 1
+    }
+  else
+    statistics = {
+      ...result.statistics,
+      options: result.statistics.options.map(option => ({ ...option, voter_count: option.text === text ? option.voter_count + 1 : 0})),
+      total_voter_count: result.statistics.total_voter_count + 1
+    }
+
+  
+  const update = await firebaseDatabaseUpdate(['messenger', messageId], { statistics })
+}
+
+const subscribeUser = async (id) => {
   const result = await firebaseDatabaseGet(['subscribers', id])
-  if(result) return success({ message: 'User already subscribed' })
+  if (result) return success({ message: 'User already subscribed' })
 
   const update = await firebaseDatabaseUpdate(['subscribers', id], { timestamp: new Date().getTime() })
-  if(!update) return fail({ message: 'Incorrect message id' })
+  if (!update) return fail({ message: 'Incorrect message id' })
 
   return POST({
     url: `https://graph.facebook.com/v6.0/me/messages?access_token=${ACCESS_TOKEN}`,
     body: {
       messaging_type: 'RESPONSE', recipient: { id }, message: {
-        text: 'Thank you for subscribing the the official Covid-19 channel for Cambodia! We will send you all the official information regarding the Covid- 19 virus so you can stay up to date!' } }
+        text: 'Thank you for subscribing the the official Covid-19 channel for Cambodia! We will send you all the official information regarding the Covid- 19 virus so you can stay up to date!'
+      }
+    }
   }).then(success).catch(fail)
 }

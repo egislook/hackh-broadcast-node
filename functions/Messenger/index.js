@@ -8,7 +8,7 @@ let ACCESS_TOKEN = 'EAACHRa3jp5ABAI7Lgnx3tjymwnfcBLJuk4fz9YUGxB3QMXZAqazhLQpo1aw
 
 module.exports.handler = async event => {
   let { token, query, body: eventBody } = extract(event)
-  let messageId = query.messageId || eventBody.messageId
+  let messageId = query.messageId || eventBody.messageId || '-M50gyIvZaNHS9Muwgwj'
 
   if(token){
     const allow = await firebaseCheckAuth(token)
@@ -40,7 +40,7 @@ module.exports.handler = async event => {
         quick_replies: options.map(option => ({
           "content_type": "text",
           "title": option,
-          "payload": "<POSTBACK_PAYLOAD>"
+          "payload": JSON.stringify({ messageId: messageId || 'test', method})
         }))
       }
 
