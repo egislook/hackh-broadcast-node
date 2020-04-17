@@ -30,7 +30,9 @@ module.exports.handler = async event => {
       case 'sendPoll':
         let question = (result && result.question) || (query.question || body.question || 'Is it text meesage?').replace(/\s{2}/gm, '\n')
         let options = (result && result.options) || (query.options || body.options || ["Yeah", "Absolutely"])
+        let imageUrl = (result && result.imageUrl) || (query.imageUrl || body.imageUrl)
 
+        imageUrl && await sendPhoto(imageUrl)
         url += `&question=${question}&options=${JSON.stringify(options)}`
         break;
       default:
@@ -52,4 +54,9 @@ module.exports.handler = async event => {
     console.log(error)
     fail({ message: error })
   }
+}
+
+const sendPhoto = async (imageUrl) => {
+  let url = `https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto?chat_id=${CHAT_ID}` + `&photo=${imageUrl}`
+  return await GET({ url }).then(res => res).catch(error => { throw error })
 }

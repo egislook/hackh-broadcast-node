@@ -8,7 +8,7 @@ let ACCESS_TOKEN = 'EAACHRa3jp5ABAI7Lgnx3tjymwnfcBLJuk4fz9YUGxB3QMXZAqazhLQpo1aw
 
 module.exports.handler = async event => {
   let { token, query, body: eventBody } = extract(event)
-  let messageId = query.messageId || eventBody.messageId || '-M50gyIvZaNHS9Muwgwj'
+  let messageId = query.messageId || eventBody.messageId 
 
   if(token){
     const allow = await firebaseCheckAuth(token)
@@ -30,11 +30,13 @@ module.exports.handler = async event => {
   const url = `https://graph.facebook.com/v6.0/me/messages?access_token=${ACCESS_TOKEN}`
 
   let body = { messaging_type: 'RESPONSE'}
+  let attachmentBody 
 
   switch (method) {
     case 'sendPoll':
       let question = (result && result.question) || (query.question || eventBody.question || 'Is it text meesage?').replace(/\s{2}/gm, '\n')
       let options = (result && result.options) || (query.options || eventBody.options || ["Yeah", "Absolutely"])
+      let imageUrl = (result && result.imageUrl) || (query.imageUrl || eventBody.imageUrl)
       body['message'] = {
         text: question,
         quick_replies: options.map(option => ({
@@ -44,6 +46,19 @@ module.exports.handler = async event => {
         }))
       }
 
+      if(imageUrl){
+        attachmentBody = {
+          "attachment": {
+            "type": "image",
+            "payload": {
+              "url": imageUrl,
+              "is_reusable": true
+            }
+          }
+        }
+
+      }
+
       break;
     default:
       let text = (result && result.text) || (query.text || eventBody.text || 'Test Message').replace(/\s{2}/gm, '\n')
@@ -51,19 +66,27 @@ module.exports.handler = async event => {
       break;
   }
 
+  let attachment_id
   try{
     for (let id in subscribers){
       body["recipient"] = {id}
-      await POST({
-        url,
-        body
-      })
+      if (attachmentBody){
+        if(attachment_id) 
+          attachmentBody['attachment']["payload"] = {
+            attachment_id,
+          }
+        const res = await POST({ url, body: {
+          ...body,
+          message: attachmentBody
+        } }).catch(err => null)
+        attachment_id = res && res.attachment_id
+      }
+      await POST({ url, body })
       .catch(err => {
         console.log(err)
         results.unsuccessful = results.unsuccessful.concat([id])
       })
       .then((res) => {
-
         results.successful = results.successful.concat([id])
       })
 
@@ -71,6 +94,7 @@ module.exports.handler = async event => {
     }
     return success(results)
   } catch(error){
+    console.log(error)
     return fail({ error })
   }
 }
