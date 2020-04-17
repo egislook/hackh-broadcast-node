@@ -48,7 +48,6 @@ async function firebaseAuthRegister({ phone, code, uid }) {
 
 async function firebaseVerify({ phone, code, uid }) {
   const result = await firebaseCheckUser(uid)
-
   if(!result)
     throw { message: 'user does not exist', statusCode: 401}
     
@@ -62,12 +61,9 @@ async function firebaseVerify({ phone, code, uid }) {
     throw { message: 'wrong verifaction code.', statusCode: 401 }
   }
 
-  const token = await admin.auth().createCustomToken(uid, { phone })
-
+  const token = await admin.auth().createCustomToken(uid)
   code = Math.floor(100000 + Math.random() * 900000).toString()
-
-  await admin.auth().setCustomUserClaims(uid, { verifyCode: code, invalidCount })
-
+  admin.auth().setCustomUserClaims(uid, { phone, role: 'admin', verifyCode: code, invalidCount })
   return token
 }
 

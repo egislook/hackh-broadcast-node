@@ -61,7 +61,7 @@ module.exports.handler = async event => {
 
       break;
     default:
-      let text = (result && result.text) || (query.text || eventBody.text || 'Test Message').replace(/\s{2}/gm, '\n')
+      let text = (result && result.message) || (query.text || eventBody.text || 'Test Message').replace(/\s{2}/gm, '\n')
       body['message'] = { text }
       break;
   }

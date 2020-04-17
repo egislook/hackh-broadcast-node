@@ -36,7 +36,7 @@ module.exports.handler = async event => {
         url += `&question=${question}&options=${JSON.stringify(options)}`
         break;
       default:
-        let text = (result && result.text ) || (query.text || body.text || 'Test Message').replace(/\s{2}/gm, '\n')
+        let text = (result && result.message ) || (query.text || body.text || 'Test Message').replace(/\s{2}/gm, '\n')
         url += `&text=${encodeURI(text)}&parse_mode=Markdown`
         break;
     }
