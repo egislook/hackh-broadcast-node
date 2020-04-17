@@ -17,33 +17,33 @@ module.exports.firebaseDatabaseSet = firebaseDatabaseSet
   })
 
 async function firebaseAuthRegister({ phone, code, uid }) {
-  let result = await firebaseCheckUser(uid)
   
-  if (!result)
-    result = await admin.auth().createUser({
-      uid,
-      password: code,
-      displayName: code,
-      phoneNumber: phone,
-      // email: `${phone}@example.com`,
-      photoURL: 'http://0.com',
-      emailVerified: true
-    })
-  else {
-    // const { photoURL } = result
+  try {
+    let result = await firebaseCheckUser(uid)
+    if (!result) {
+      result = await admin.auth().createUser({
+        uid,
+        phoneNumber: phone,
+        // email: `${phone}@example.com`,
+        emailVerified: true,
+      })
+      await admin.auth().setCustomUserClaims(uid, { verifyCode: code, invalidCount: 0 })
+    }else {
+      // const { photoURL } = result
 
-    // let invalidCount = photoURL && Number(photoURL.replace(/http:\/\/|\.com/ig, '')) || 0
+      // let invalidCount = photoURL && Number(photoURL.replace(/http:\/\/|\.com/ig, '')) || 0
 
-    // if (invalidCount > 5)
-    //   throw { message: 'attemp exceeded limitation', statusCode: 401 }
-    result = await admin
-      .auth()
-      .updateUser(uid, { password: code, displayName: code, photoURL: 'http://0.com' })
+      // if (invalidCount > 5)
+      //   throw { message: 'attemp exceeded limitation', statusCode: 401 }
+
+      await admin.auth().setCustomUserClaims(uid, { verifyCode: code, invalidCount: 0 })
+    }
+    return true
+  } catch (error) {
+    
+    return false
   }
 
-  if(!!result) return true
-
-  return false
 }
 
 async function firebaseVerify({ phone, code, uid }) {
@@ -52,26 +52,21 @@ async function firebaseVerify({ phone, code, uid }) {
   if(!result)
     throw { message: 'user does not exist', statusCode: 401}
     
-  const { displayName, photoURL } = result
-
-  let invalidCount = photoURL && Number(photoURL.replace(/http:\/\/|\.com/ig, '')) || 0
+  const { customClaims: { verifyCode, invalidCount = 0} } = result
 
   if (invalidCount > 5) 
     throw { message: 'attemp exceeded limitation', statusCode: 401 }
 
-  if (displayName !== code){
-    admin
-      .auth()
-      .updateUser(uid, { photoURL: `http://${invalidCount + 1}.com` })
+  if (verifyCode !== code){
+    await admin.auth().setCustomUserClaims(uid, { verifyCode, invalidCount: invalidCount + 1})
     throw { message: 'wrong verifaction code.', statusCode: 401 }
   }
 
-  const token =  await admin.auth().createCustomToken(uid, { phone })
+  const token = await admin.auth().createCustomToken(uid, { phone })
 
   code = Math.floor(100000 + Math.random() * 900000).toString()
-  admin
-    .auth()
-    .updateUser(uid, { password: code, displayName: code })
+
+  await admin.auth().setCustomUserClaims(uid, { verifyCode: code, invalidCount })
 
   return token
 }
