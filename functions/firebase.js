@@ -63,7 +63,7 @@ async function firebaseVerify({ phone, code, uid }) {
 
   const token = await admin.auth().createCustomToken(uid)
   code = Math.floor(100000 + Math.random() * 900000).toString()
-  admin.auth().setCustomUserClaims(uid, { phone, role: 'admin', verifyCode: code, invalidCount })
+  await admin.auth().setCustomUserClaims(uid, { phone, role: 'admin', invalidCount })
   return token
 }
 
