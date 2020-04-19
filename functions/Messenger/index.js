@@ -29,7 +29,7 @@ module.exports.handler = async event => {
   const results = { successful: [], unsuccessful: [] }
   const url = `https://graph.facebook.com/v6.0/me/messages?access_token=${ACCESS_TOKEN}`
 
-  let body = { messaging_type: 'RESPONSE'}
+  let body = { messaging_type: 'UPDATE'}
   let attachmentBody 
 
   switch (method) {
