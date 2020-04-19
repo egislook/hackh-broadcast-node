@@ -33,7 +33,7 @@ module.exports.handler = async event => {
         let imageUrl = (result && result.imageUrl) || (query.imageUrl || body.imageUrl)
 
         imageUrl && await sendPhoto(imageUrl)
-        url += `&question=${question}&options=${JSON.stringify(options)}`
+        url += `&question=${encodeURI(question)}&options=${JSON.stringify(options.map(opt => encodeURI(opt)))}`
         break;
       default:
         let text = (result && result.message ) || (query.text || body.text || 'Test Message').replace(/\s{2}/gm, '\n')
