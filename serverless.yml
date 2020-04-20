@@ -57,5 +57,19 @@ functions:
           path: api/messenger/webhook
           method: post
           cors: true
+  users:
+    handler: functions/Users/index.handler
+    events:
+      - http:
+          path: api/users
+          method: get
+          cors: true
+  users-update:
+    handler: functions/Users/post.handler
+    events:
+      - http:
+          path: api/users
+          method: post
+          cors: true
 plugins:
   - serverless-offline

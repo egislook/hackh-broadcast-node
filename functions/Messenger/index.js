@@ -20,7 +20,7 @@ module.exports.handler = async event => {
 
   let result
   if(!!messageId){
-    result = await firebaseDatabaseGet(['messenger', messageId]) || {}
+    result = await firebaseDatabaseGet(['messages', messageId]) || {}
     if(!result) return fail({ message: 'Incorrect message id' })
   }
 

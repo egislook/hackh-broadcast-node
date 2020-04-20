@@ -35,7 +35,7 @@ module.exports.handler = async event => {
 }
 
 const updatePollStatistic = async ({ messageId, text, statisticId}) => {
-  let result = await firebaseDatabaseGet(['messenger', messageId]) || {}
+  let result = await firebaseDatabaseGet(['messages', messageId]) || {}
   let statistics = {}
 
   if (!result.statistics)
@@ -56,7 +56,7 @@ const updatePollStatistic = async ({ messageId, text, statisticId}) => {
     }
 
   
-  const update = await firebaseDatabaseUpdate(['messenger', messageId], { statistics })
+  const update = await firebaseDatabaseUpdate(['messages', messageId], { statistics })
 }
 
 const subscribeUser = async (id) => {

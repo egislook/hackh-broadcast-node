@@ -17,7 +17,7 @@ module.exports.handler = async event => {
   let result
 
   if(!!messageId){
-    result = await firebaseDatabaseGet(['telegram', messageId]) || {}
+    result = await firebaseDatabaseGet(['messages', messageId]) || {}
     if(!result) return fail({ message: 'Incorrect message id' })
   }
 
@@ -46,7 +46,7 @@ module.exports.handler = async event => {
     const { result: { poll } } = newResult
 
     if (poll && messageId){
-      await firebaseDatabaseUpdate(['telegram', messageId], { statisticId: poll.id})
+      await firebaseDatabaseUpdate(['messages', messageId], { statisticId: poll.id})
     }
 
     return success(newResult)
