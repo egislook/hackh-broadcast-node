@@ -3,10 +3,10 @@ const { firebaseAuthRegister, firebaseCheckUser, firebaseCheckAuth } = require('
 const admin = require('firebase-admin')
 
 module.exports.handler = async event => {
-  const { body, query, token, method } = extract(event)
+  const { token } = extract(event)
 
   try {
-    const uid = firebaseCheckAuth(token)
+    const uid = await firebaseCheckAuth(token)
 
     if (!uid) return fail({ message: 'Unauthorized access' })
 
@@ -16,9 +16,9 @@ module.exports.handler = async event => {
     let {users} = await admin.auth().listUsers()
 
     users = users.map(user => {
-      const { phoneNumber, uid, customClaims, displayName = 'user' } = user
+      const { phoneNumber, uid, customClaims, displayName = 'user', photoUrl } = user
       return {
-        uid, phoneNumber, displayName,
+        uid, phoneNumber, displayName, photoUrl
         role: customClaims && customClaims.role || 'viewer'
       }
     })

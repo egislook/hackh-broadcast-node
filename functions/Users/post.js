@@ -8,15 +8,16 @@ module.exports.handler = async event => {
   try {
     let { displayName, phoneNumber, role = 'user', uid, photoUrl} = body
 
-    let auth = firebaseCheckAuth(token)
+    let auth = await firebaseCheckAuth(token)
     if (!auth) return fail({ message: 'Unauthorized access' })
     
     if (!displayName && !phoneNumber) return fail({ message: 'you need provide displayName and phone.' })
     
-    // if (uid){
-    //   result = await updateUser({ uid, displayName, role})
-    //   return success(result)
-    // }
+    if (uid){
+      result = await updateUser({ uid, displayName, role, photoUrl})
+      return success(result)
+    }
+
     uid = phoneNumber.replace(/^\+855|^0/, '855')
     // const user = await firebaseCheckUser(uid)
     // if (!user || (user && user.customClaims && user.customClaims.role))
@@ -33,7 +34,7 @@ module.exports.handler = async event => {
 
     await admin.auth().setCustomUserClaims(uid, { role })
 
-    result = { uid, phoneNumber, displayName, role }
+    result = { uid, phoneNumber, displayName, role, photoUrl: photoUrl || null }
 
     return success(result)
   } catch (error) {
@@ -44,12 +45,12 @@ module.exports.handler = async event => {
 
 const updateUser = async ({ uid, displayName}) => {
   try {
-    admin.auth().updateUser(uid, { displayName })
+    return admin.auth().updateUser(uid, { displayName })
       .then(async function (userRecord) {
         // See the UserRecord reference doc for the contents of userRecord.
         const user = await userRecord.toJSON() || {}
-        console.log(userRecord.toJSON())
-        return { uid: uid, displayName, phoneNumber: user.phoneNumber, role: user.customClaims.role }
+
+        return { uid: uid, displayName, phoneNumber: user.phoneNumber, role: user.customClaims.role, photoUrl: user.photoUrl }
       })
       .catch(function (error) {
         throw error

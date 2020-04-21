@@ -8,8 +8,8 @@ module.exports.handler = async event => {
   try {
     let { uid  } = body
 
-    // let auth = firebaseCheckAuth(token)
-    // if (!auth) return fail({ message: 'Unauthorized access' })
+    let auth = await firebaseCheckAuth(token)
+    if (!auth) return fail({ message: 'Unauthorized access' })
 
     uid = phone.replace(/^\+855|^0/, '855')
 
