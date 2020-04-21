@@ -7,8 +7,9 @@ module.exports.handler = async event => {
 
   try {
     let { displayName, phone, role = 'user', uid, photoUrl} = body
-    // let uid = firebaseCheckAuth(token)
-    // if (!uid) return fail({ message: 'Unauthorized access' })
+
+    let auth = firebaseCheckAuth(token)
+    if (!auth) return fail({ message: 'Unauthorized access' })
     
     if (!displayName && !phone) return fail({ message: 'you need provide displayName and phone.' })
     

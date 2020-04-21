@@ -71,5 +71,12 @@ functions:
           path: api/users
           method: post
           cors: true
+  users-delete:
+    handler: functions/Users/delete.handler
+    events:
+      - http:
+          path: api/users/delete
+          method: post
+          cors: true
 plugins:
   - serverless-offline
