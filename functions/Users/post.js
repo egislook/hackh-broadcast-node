@@ -6,24 +6,23 @@ module.exports.handler = async event => {
   const { body, token } = extract(event)
 
   try {
-    let { displayName, phone, role = 'user', uid, photoUrl} = body
+    let { displayName, phoneNumber, role = 'user', uid, photoUrl} = body
 
     let auth = firebaseCheckAuth(token)
     if (!auth) return fail({ message: 'Unauthorized access' })
     
-    if (!displayName && !phone) return fail({ message: 'you need provide displayName and phone.' })
+    if (!displayName && !phoneNumber) return fail({ message: 'you need provide displayName and phone.' })
     
     // if (uid){
-    //   result = await updateUser({ uid, displayName})
-    //   console.log(result)
+    //   result = await updateUser({ uid, displayName, role})
     //   return success(result)
     // }
-    uid = phone.replace(/^\+855|^0/, '855')
+    uid = phoneNumber.replace(/^\+855|^0/, '855')
     // const user = await firebaseCheckUser(uid)
     // if (!user || (user && user.customClaims && user.customClaims.role))
     let object = {
       uid,
-      phoneNumber: phone,
+      phoneNumber: phoneNumber,
       displayName,
       emailVerified: true,
     }
@@ -34,7 +33,7 @@ module.exports.handler = async event => {
 
     await admin.auth().setCustomUserClaims(uid, { role })
 
-    result = { uid, phoneNumber: phone, displayName, role }
+    result = { uid, phoneNumber, displayName, role }
 
     return success(result)
   } catch (error) {
