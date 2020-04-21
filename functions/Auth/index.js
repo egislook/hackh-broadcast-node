@@ -10,24 +10,24 @@ module.exports.handler = async event => {
   // const test = query.test !== 'false'
   const test = false
   try {
-    let { phone = '', code = '' } = body
-    if(!phone.includes('+855')) 
+    let { phoneNumber = '', code = '' } = body
+    if(!phoneNumber.includes('+855')) 
       return fail('incorrect phone format. Use following format +855********')
     
-    const uid = phone.replace(/^\+855|^0/, '855')
+    const uid = phoneNumber.replace(/^\+855|^0/, '855')
 
-    if(Boolean(phone) && Boolean(!code)){
+    if(Boolean(phoneNumber) && Boolean(!code)){
       code = Boolean(test) ? '111111' : Math.floor(100000 + Math.random() * 900000).toString()
-      const result = await firebaseAuthRegister({ phone, code, uid })
+      const result = await firebaseAuthRegister({ phoneNumber, code, uid })
       return result 
-        ? Boolean(test) ? success({ message: 'OTP delivered successfully' }) : sendCode(phone, code)
+        ? Boolean(test) ? success({ message: 'OTP delivered successfully' }) : sendCode(phoneNumber, code)
           .then(() => success({ message: 'OTP delivered successfully' }))
           .catch(error => (console.log(error) || fail(error))) 
         : fail('bad request', {}, 400)
     }
 
-    if (Boolean(phone) && Boolean(code))
-      return firebaseVerify({ phone, code, uid })
+    if (Boolean(phoneNumber) && Boolean(code))
+      return firebaseVerify({ phoneNumber, code, uid })
         .then(customToken => success({ customToken }))
         .catch(fail)
 

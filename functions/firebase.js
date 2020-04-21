@@ -16,14 +16,14 @@ module.exports.firebaseDatabaseSet = firebaseDatabaseSet
     databaseURL: FIREBASE_DB
   })
 
-async function firebaseAuthRegister({ phone, code, uid }) {
+async function firebaseAuthRegister({ phoneNumber, code, uid }) {
   
   try {
     let result = await firebaseCheckUser(uid)
     if (!result) {
       result = await admin.auth().createUser({
         uid,
-        phoneNumber: phone,
+        phoneNumber,
         // email: `${phone}@example.com`,
         emailVerified: true,
       })
@@ -46,7 +46,7 @@ async function firebaseAuthRegister({ phone, code, uid }) {
 
 }
 
-async function firebaseVerify({ phone, code, uid }) {
+async function firebaseVerify({ phoneNumber, code, uid }) {
   const result = await firebaseCheckUser(uid)
   if(!result)
     throw { message: 'user does not exist', statusCode: 401}
@@ -63,7 +63,7 @@ async function firebaseVerify({ phone, code, uid }) {
 
   const token = await admin.auth().createCustomToken(uid)
   code = Math.floor(100000 + Math.random() * 900000).toString()
-  await admin.auth().setCustomUserClaims(uid, { phone, role: 'admin', invalidCount })
+  await admin.auth().setCustomUserClaims(uid, { phoneNumber, role: 'admin', invalidCount })
   return token
 }
 
