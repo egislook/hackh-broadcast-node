@@ -18,7 +18,7 @@ module.exports.handler = async event => {
     users = users.map(user => {
       const { phoneNumber, uid, customClaims, displayName = 'user', photoUrl } = user
       return {
-        uid, phoneNumber, displayName, photoUrl
+        uid, phoneNumber, displayName, photoUrl,
         role: customClaims && customClaims.role || 'viewer'
       }
     })
@@ -30,4 +30,3 @@ module.exports.handler = async event => {
     return statusCode ? fail(message, {}, statusCode) : fail(error)
   }
 }
-
